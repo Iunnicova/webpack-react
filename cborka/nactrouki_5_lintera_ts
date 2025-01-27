@@ -1,0 +1,544 @@
+// Общие настройки линтера и TS
+// Stylelint, ESLint и Prettier — инструменты для статического анализа и форматирования кода, которые используются в разработке программного обеспечения. Их точно придётся использовать в работе, так как без них проверка кода станет слишком сложной и рутинной задачей.
+
+// Найдите и установите следующие плагины:
+
+// Prettier - Code formatter
+// ESLint
+// Stylelint
+
+// Установите необходимые пакеты в проекте:
+
+// npm install -D eslint prettier eslint-config-prettier eslint-plugin-eslint-comments eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-prettier eslint-plugin-react eslint-plugin-react-hooks
+
+// npm install -D @typescript-eslint/parser @typescript-eslint/eslint-plugin
+
+// npm install -D stylelint stylelint-config-standard stylelint-order
+
+// Также для VSCode понадобится установить плагины prettier, eslint и stylelint и добавить конфигурационные файлы в корень проекта.
+
+// Конфиг для stylelint
+
+//     //.stylelintignore
+//     **/normalize.css
+//     **/normalize.min.css
+//     **/fonts/
+//     **/images/
+//     **/img/
+    
+
+//     //.stylelintrc.json
+//     {
+//         "extends": ["stylelint-config-standard"],
+//         "plugins": ["stylelint-order"],
+//         "rules": {
+//             "color-no-invalid-hex": true,
+//             "font-family-no-duplicate-names": true,
+//             "function-calc-no-unspaced-operator": true,
+//             "function-linear-gradient-no-nonstandard-direction": true,
+//             "string-no-newline": true,
+//             "unit-no-unknown": true,
+//             "property-no-unknown": [
+//                 true,
+//                 {
+//                     "ignoreProperties": ["print-color-adjust"]
+//                 }
+//             ],
+//             "declaration-block-no-shorthand-property-overrides": true,
+//             "block-no-empty": true,
+//             "selector-pseudo-class-no-unknown": true,
+//             "selector-pseudo-element-no-unknown": true,
+//             "selector-type-no-unknown": true,
+//             "media-feature-name-no-unknown": true,
+//             "at-rule-no-unknown": true,
+//             "comment-no-empty": true,
+//             "no-empty-source": true,
+//             "no-invalid-double-slash-comments": true,
+//             "no-unknown-animations": true,
+//             "function-url-no-scheme-relative": true,
+//             "number-max-precision": 2,
+//             "declaration-block-single-line-max-declarations": 1,
+//             "comment-word-disallowed-list": ["todo"],
+//             "color-hex-length": "long",
+//             "font-family-name-quotes": "always-unless-keyword",
+//             "function-name-case": "lower",
+//             "function-url-quotes": "always",
+//             "length-zero-no-unit": true,
+//             "value-keyword-case": [
+//                 "lower",
+//                 {
+//                     "ignoreKeywords": ["A4"]
+//                 }
+//             ],
+//             "declaration-empty-line-before": "never",
+//             "declaration-property-unit-allowed-list": {
+//                 "line-height": []
+//             },
+//             "selector-class-pattern": "^[a-z][a-zA-Z0-9]*(-[a-zA-Z0-9]+)*(__[a-z0-9]+(-[a-z0-9]+)*)?(_[a-z0-9]+(-[a-z0-9]+)*)?(_[a-z0-9]+(-[a-z0-9]+)*)?$",
+//             "selector-attribute-quotes": "always",
+//             "selector-pseudo-element-colon-notation": "double",
+//             "selector-type-case": "lower",
+//             "rule-empty-line-before": [
+//                 "always-multi-line",
+//                 {
+//                     "except": ["first-nested"]
+//                 }
+//             ],
+//             "at-rule-empty-line-before": [
+//                 "always",
+//                 {
+//                     "except": ["blockless-after-blockless", "first-nested"]
+//                 }
+//             ],
+//             "comment-empty-line-before": [
+//                 "always",
+//                 {
+//                     "except": ["first-nested"]
+//                 }
+//             ],
+//             "comment-whitespace-inside": "always",
+//             "order/order": ["custom-properties", "declarations"],
+//             "order/properties-order": [
+//                 "all",
+//                 "position",
+//                 "top",
+//                 "right",
+//                 "bottom",
+//                 "left",
+//                 "inset",
+//                 "inset-block-start",
+//                 "inset-block-end",
+//                 "inset-inline-start",
+//                 "inset-inline-end",
+//                 "z-index",
+//                 "display",
+//                 "grid-template",
+//                 "grid-template-rows",
+//                 "grid-template-columns",
+//                 "grid-template-areas",
+//                 "grid-auto-rows",
+//                 "grid-auto-columns",
+//                 "grid-auto-flow",
+//                 "grid-area",
+//                 "grid-row",
+//                 "grid-column",
+//                 "grid-row-start",
+//                 "grid-row-end",
+//                 "grid-column-start",
+//                 "grid-column-end",
+//                 "flex",
+//                 "flex-grow",
+//                 "flex-shrink",
+//                 "flex-basis",
+//                 "flex-flow",
+//                 "flex-direction",
+//                 "flex-wrap",
+//                 "order",
+//                 "justify-content",
+//                 "justify-items",
+//                 "justify-self",
+//                 "align-content",
+//                 "align-items",
+//                 "align-self",
+//                 "grid-gap",
+//                 "gap",
+//                 "grid-row-gap",
+//                 "row-gap",
+//                 "grid-column-gap",
+//                 "column-gap",
+//                 "float",
+//                 "clear",
+//                 "box-sizing",
+//                 "writing-mode",
+//                 "width",
+//                 "min-width",
+//                 "max-width",
+//                 "height",
+//                 "min-height",
+//                 "max-height",
+//                 "inline-size",
+//                 "min-inline-size",
+//                 "max-inline-size",
+//                 "block-size",
+//                 "min-block-size",
+//                 "max-block-size",
+//                 "margin",
+//                 "margin-top",
+//                 "margin-right",
+//                 "margin-bottom",
+//                 "margin-left",
+//                 "margin-block-start",
+//                 "margin-block-end",
+//                 "margin-inline-start",
+//                 "margin-inline-end",
+//                 "padding",
+//                 "padding-top",
+//                 "padding-right",
+//                 "padding-bottom",
+//                 "padding-left",
+//                 "padding-block-start",
+//                 "padding-block-end",
+//                 "padding-inline-start",
+//                 "padding-inline-end",
+//                 "overflow",
+//                 "overflow-x",
+//                 "overflow-y",
+//                 "color",
+//                 "font",
+//                 "font-weight",
+//                 "font-size",
+//                 "font-family",
+//                 "font-style",
+//                 "font-display",
+//                 "font-variant",
+//                 "font-size-adjust",
+//                 "font-stretch",
+//                 "font-effect",
+//                 "font-emphasize",
+//                 "font-emphasize-position",
+//                 "font-emphasize-style",
+//                 "font-smooth",
+//                 "line-height",
+//                 "direction",
+//                 "letter-spacing",
+//                 "white-space",
+//                 "text-align",
+//                 "text-align-last",
+//                 "text-transform",
+//                 "text-decoration",
+//                 "text-emphasis",
+//                 "text-emphasis-color",
+//                 "text-emphasis-style",
+//                 "text-emphasis-position",
+//                 "text-indent",
+//                 "text-justify",
+//                 "text-outline",
+//                 "text-wrap",
+//                 "text-overflow",
+//                 "text-overflow-ellipsis",
+//                 "text-overflow-mode",
+//                 "text-orientation",
+//                 "text-shadow",
+//                 "vertical-align",
+//                 "word-wrap",
+//                 "word-break",
+//                 "word-spacing",
+//                 "overflow-wrap",
+//                 "tab-size",
+//                 "hyphens",
+//                 "unicode-bidi",
+//                 "columns",
+//                 "column-count",
+//                 "column-fill",
+//                 "column-gap",
+//                 "column-rule",
+//                 "column-rule-color",
+//                 "column-rule-style",
+//                 "column-rule-width",
+//                 "column-span",
+//                 "column-width",
+//                 "page-break-after",
+//                 "page-break-before",
+//                 "page-break-inside",
+//                 "src",
+//                 "list-style",
+//                 "list-style-position",
+//                 "list-style-type",
+//                 "list-style-image",
+//                 "table-layout",
+//                 "empty-cells",
+//                 "caption-side",
+//                 "background",
+//                 "background-color",
+//                 "background-image",
+//                 "background-repeat",
+//                 "background-position",
+//                 "background-position-x",
+//                 "background-position-y",
+//                 "background-size",
+//                 "background-clip",
+//                 "background-origin",
+//                 "background-attachment",
+//                 "background-blend-mode",
+//                 "box-decoration-break",
+//                 "border",
+//                 "border-width",
+//                 "border-style",
+//                 "border-color",
+//                 "border-top",
+//                 "border-block-start",
+//                 "border-top-width",
+//                 "border-top-style",
+//                 "border-top-color",
+//                 "border-right",
+//                 "border-inline-end",
+//                 "border-right-width",
+//                 "border-right-style",
+//                 "border-right-color",
+//                 "border-bottom",
+//                 "border-block-end",
+//                 "border-bottom-width",
+//                 "border-bottom-style",
+//                 "border-bottom-color",
+//                 "border-left",
+//                 "border-inline-start",
+//                 "border-left-width",
+//                 "border-left-style",
+//                 "border-left-color",
+//                 "border-radius",
+//                 "border-top-left-radius",
+//                 "border-top-right-radius",
+//                 "border-bottom-right-radius",
+//                 "border-bottom-left-radius",
+//                 "border-image",
+//                 "border-image-source",
+//                 "border-image-slice",
+//                 "border-image-width",
+//                 "border-image-outset",
+//                 "border-image-repeat",
+//                 "border-collapse",
+//                 "border-spacing",
+//                 "outline",
+//                 "outline-width",
+//                 "outline-style",
+//                 "outline-color",
+//                 "outline-offset",
+//                 "box-shadow",
+//                 "visibility",
+//                 "cursor",
+//                 "mix-blend-mode",
+//                 "backdrop-filter",
+//                 "will-change",
+//                 "transform",
+//                 "transform-origin",
+//                 "transform-style",
+//                 "backface-visibility",
+//                 "opacity",
+//                 "filter",
+//                 "perspective",
+//                 "perspective-origin",
+//                 "transition",
+//                 "transition-delay",
+//                 "transition-timing-function",
+//                 "transition-duration",
+//                 "transition-property",
+//                 "animation",
+//                 "animation-name",
+//                 "animation-duration",
+//                 "animation-play-state",
+//                 "animation-timing-function",
+//                 "animation-delay",
+//                 "animation-iteration-count",
+//                 "animation-direction",
+//                 "animation-fill-mode",
+//                 "appearance",
+//                 "clip",
+//                 "clip-path",
+//                 "counter-reset",
+//                 "counter-increment",
+//                 "resize",
+//                 "user-select",
+//                 "nav-index",
+//                 "nav-up",
+//                 "nav-right",
+//                 "nav-down",
+//                 "nav-left",
+//                 "pointer-events",
+//                 "quotes",
+//                 "touch-action",
+//                 "zoom",
+//                 "fill",
+//                 "fill-rule",
+//                 "clip-rule",
+//                 "stroke",
+//                 "stroke-width"
+//             ]
+//         }
+//     }
+    
+
+//     Конфиг для eslintrc
+
+//     // eslint.config.js
+
+// module.exports = {
+//     files: ["./src/**/*.{js,jsx,ts,tsx,json}"],
+//     parser: '@typescript-eslint/parser',
+//     parserOptions: {
+//         ecmaVersion: 2020,
+//         sourceType: 'module',
+//         warnOnUnsupportedTypeScriptVersion: false
+//     },
+//     settings: {
+//         react: {
+//             version: 'detect',
+//         },
+//     },
+//     extends: [
+//         "plugin:@typescript-eslint/recommended",
+//         'plugin:prettier/recommended',
+//         'prettier',
+//         'plugin:react/recommended',
+//         'plugin:react-hooks/recommended',
+//         'plugin:import/errors',
+//         'plugin:import/warnings',
+//         'plugin:import/typescript',
+//         'plugin:jsx-a11y/recommended',
+//         'plugin:eslint-comments/recommended',
+
+//     ],
+//     rules: {
+//         "quotes": [2, "single", {"avoidEscape": true}],
+//         'no-unused-vars': 'off',
+//         '@typescript-eslint/no-unused-vars': ['error'],
+//         '@typescript-eslint/no-var-requires': 'off',
+//         'react/prop-types': 'off',
+//         'react/jsx-uses-react': 'off',
+//         'react/react-in-jsx-scope': 'off',
+//         '@typescript-eslint/explicit-module-boundary-types': 'off',
+//     },
+//     ignores: [
+//         "node_modules/**/*",
+//         "public/**/*",
+//         "eslint.config.js",
+//         "storybook-static/**/*",
+//         "build/**/*",
+//         "dist/**/*",
+//         "webpack/*.js",
+//         "package*.json",
+//         "**/*.d.ts"
+//     ]
+// }
+
+// Конфиг для prettier
+
+//     //.prettierrc.js
+//     module.exports = {
+//         semi: false,
+//         trailingComma: 'es5',
+//         singleQuote: true,
+//         jsxSingleQuote: true,
+//         printWidth: 80,
+//         useTabs: true,
+//         tabWidth: 2,
+//         endOfLine: 'lf'
+//     }
+    
+//     //.prettierignore
+//     build
+//     dist
+//     storybook-static
+    
+
+//     Настройте блок scripts в файле package.json.
+
+//     // package.json
+// "scripts": {
+//     "build": "cross-env NODE_ENV=production webpack --config webpack/webpack.config.js --env env=prod",
+//     "start": "webpack serve --config webpack/webpack.config.js --env env=dev",
+//     "stylelint": "stylelint \"src/**/*.{css,scss}\"",
+//     "stylelint:fix": "stylelint \"src/**/*.{css,scss}\" --fix",
+//     "lint": "eslint --fix",
+//     "format": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\" --ignore-path ./.prettierignore",
+//     "check": "npm run stylelint:fix && npm run lint && npm run format"
+// },
+
+// Вы настроили скрипты для проверки соответствия нашего кода код-стайлу команды. Однако линтеры лишь говорят о качестве кода, но не блокируют попадание кода, не прошедшего проверки, в репозиторий. Да и вручную запускать проверку достаточно неудобно. Однако, к счастью, процесс можно автоматизировать.
+
+// Автоматизация процесса проверки кода
+
+// Для автоматизации проверки перед коммитом кода существуют специальные инструменты — husky и lint-staged.
+
+// Начать нужно с установки этих пакетов:
+
+// npm install -D husky
+
+// npm install -D lint-staged
+
+// Пакет husky позволяет использовать хуки Git для выполнения скриптов на определённых этапах разработки, таких как коммит или предварительная отправка (pre-commit/pre-push). С помощью Husky вы можете настроить скрипты, которые будут выполняться автоматически перед выполнением определённых Git-команд.
+
+// Пакет lint-staged позволяет запускать линтеры только для изменённых файлов, что значительно ускоряет проверку кода. Lint-staged работает в связке с Husky, чтобы запускать линтеры только для изменённых файлов на этапе коммита.
+
+// Для инициализации husky выполним следующую команду (перед выполнением команды удостоверьтесь, что git был проинициализирован):
+
+// npx husky init
+
+// В результате этой команды в файл  package.json будет добавлен скрипт:
+
+// "prepare": "husky"
+
+// Также будет создана скрытая папка .husky.
+
+// Для создания pre-commit хука с использованием Husky в папке .husky вам потребуется отредактировать файл  pre-commit  следующим образом:
+
+// npx lint-staged # здесь может быть любая команда, которую вы хотите выполнить перед коммитом
+
+// Далее настроить lint-staged в файле package.json и в него добавить:
+
+// "lint-staged": {
+//      "*.{css,scss}": "npm run stylelint:fix",
+//      "*.{js,jsx,ts,tsx}": "npm run lint",
+//      "*.{js,jsx,ts,tsx,json,css,scss,md}": "npm run format"
+// },
+
+// Создание структурированных и согласованных коммитов
+
+// У них есть следующие преимущества:
+// Ясность и понятность. Заголовок коммита по стандарту “Conventional Commits” содержит информацию о типе изменений. Например, "feat" для новых функций, "fix" для исправлений багов. Это делает коммиты более читаемыми и понятными.
+
+// Автоматизация версионирования. Использование структурированных коммитов позволяет автоматически определять версию проекта. Это особенно полезно при соблюдении семантического версионирования (SemVer).
+
+// Лёгкость навигации. Имея коммиты, оформленные по стандарту, проще найти конкретные изменения, просматривая историю проекта.
+
+// Однако часто разработчики сталкиваются с проблемой несогласованности и нечёткости в коммит-сообщениях, что затрудняет понимание сути изменений. В решении этой проблемы нам поможет инструмент Commitizen. 
+// Установите его:
+
+// npm install -D commitizen cz-conventional-changelog
+
+// сommitizen — это инструмент командной строки. Он предоставляет интерактивный интерфейс для создания коммитов. Commitizen гарантирует соблюдение определённого формата коммитов, чтобы улучшить читаемость и удобство использования в команде разработчиков.
+
+// cz-conventional-changelog — это плагин для Commitizen, который определяет набор предопределённых шаблонов для коммитов, следуя соглашению об именовании коммитов "Conventional Commits".
+
+// Соглашение "Conventional Commits" определяет структуру коммитов и рекомендует использование ключевых слов, таких как "feat", "fix", "docs", "chore" и других, для указания типа изменений в коммите. Это позволяет автоматически генерировать читаемые и информативные журналы изменений (changelogs) на основе коммитов.
+
+// Добавьте в файл package.json новый скрипт commit, которым вы будете делать коммиты и конфигурацию для инструмента commitizen:
+
+// // package.json
+// "scripts": {
+//     ...
+//     "check": "npm run stylelint:fix && npm run lint && npm run format",    
+//     "commit": "npm run check && cz"
+//     ...
+// },
+// "config": {
+//     "commitizen": {
+//         "path": "./node_modules/cz-conventional-changelog"
+//     }
+// },
+
+// Для создания коммита с проверкой можно теперь использовать команды:
+
+// git add -A
+
+// npm run commit
+
+// После проверки линтерами вам предложат пройти опрос, после ответов будет пройдена ещё раз проверка линтерами и создан коммит:
+
+// Преимущества автоматизации версионирования
+
+// Одним из ключевых преимуществ использования структурированных коммитов и Commitizen является возможность автоматического версионирования. 
+
+// Инструмент [standard-version](https://www.npmjs.com/package/standard-version) позволяет автоматизировать процесс обновления версий, основываясь на типах изменений в коммитах. Установите его:
+
+// npm install --save-dev standard-version
+
+// После установки используйте
+
+//  npx standard-version
+
+//  для автоматического обновления версии, создания тега и обновления файла CHANGELOG.md. 
+
+// Заключение:
+// Использование Commitizen и Conventional Commits — это мощный способ внедрить структурированные коммиты в ваш проект, повысив ясность, согласованность и автоматизацию процессов. Эти инструменты облегчают поддержку проекта, улучшая взаимодействие между членами команды и упрощая отслеживание изменений в истории проекта.
+
+// nactrouki_5_lintera_ts
