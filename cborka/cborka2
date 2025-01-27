@@ -1,0 +1,186 @@
+Сборка проекта на Webpack. Часть 2
+Пришло время настроить и запустить нашу сборку.
+Настроим сборку Webpack и подключим ts-loader
+В предыдущем уроке вы создали файл webpack.config.js и разобрали основные его составляющие. В этом файле будут лежать все настройки для нашей сборки. Замените его содержимое на код ниже: 
+
+const path = require('path'); // для того чтобы превратить относительный путь в абсолютный, мы будем использовать пакет path
+
+module.exports = {
+    entry: path.resolve(__dirname, './src/index.ts'), // точка входа в наше приложение содержит абсолютный путь к index.ts
+    output: {
+        path: path.resolve(__dirname, './dist'), // путь, куда будет собираться наш проект
+        filename: 'main.js', // имя нашего бандла,
+        clean: true, // очистка папки перед сборкой 
+    },
+    // Нужно помочь вебпаку научиться работать  с jsx- и tsx-файлами, для этого используют ts-loader
+    module: {
+        rules: [
+            {
+                test: /\.[tj]sx?$/, // содержит регулярное выражение, которое содержит информацию, какие файлы должны обрабатываться этим loader
+
+                use: [
+                    {
+                        loader: 'ts-loader',
+                    },
+                ], // для того чтобы ts-loader корректно отработал, нам нужен tsconfig, его можно создать вручную, а можно создать автоматически
+                /** чтобы проинициализировать его автоматически, можно установить пакет typesctipt глобально или использовать npx, 
+                    выполнив команду npx tsc --init. После создания конфига нужно включить "allowJs": true, чтобы работать не только c typescript,
+                    также меняем "jsx": "react", чтобы мы могли работать с react-компонентами, и включаем карту ресурсов "sourceMap": true,
+                    пока на этом всё, вернёмся в этот конфиг позже */
+                exclude: /node_modules/,
+            },
+        ],
+    },
+    resolve: {
+        extensions: ['.js', '.jsx', '.tsx', '.ts', '.json'], // указываем файлы, с которыми будет работать webpack
+    },
+};
+
+Добавим конфигурационный файл для TypeScript
+В корне создайте файл tsconfig.json:
+
+{
+    "compilerOptions": {
+        "target": "ES5" /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', or 'ESNEXT'. */,
+        "module": "ESNext" /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', 'es2020', or 'ESNext'. */,
+        "moduleResolution": "node" /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */ /* Type declaration files to be included in compilation. */,
+        "lib": [
+            "DOM",
+            "ESNext"
+        ] /* Specify library files to be included in the compilation. */,
+        "jsx": "react-jsx" /* Specify JSX code generation: 'preserve', 'react-native', 'react' or 'react-jsx'. */,
+        "isolatedModules": true /* Transpile each file as a separate module (similar to 'ts.transpileModule'). */,
+        "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
+        "strict": true /* Enable all strict type-checking options. */,
+        "skipLibCheck": true /* Skip type checking of declaration files. */,
+        "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
+        "resolveJsonModule": true,
+        "allowJs": true /* Allow javascript files to be compiled. Useful when migrating JS to TS */,
+        "allowSyntheticDefaultImports": true
+    },
+    "outDir": "./dist/",
+    "include": ["src/**/*"]
+}
+
+Разберём этот файл подробнее.
+В поле include вы можете указать директории или специфический набор файлов, в которых будет применяться TypeScript. Все пути должны быть указаны относительно файла tsconfig.json.
+Помимо include, существует поле exclude — в нём, наоборот, указываются директории или файлы, которые будут проигнорированы компилятором TypeScript.
+В поле compilerOptions описывается, как TypeScript ведёт себя в проекте.
+Одним из самых значимых и полезных параметров в этой конфигурации является строгий режим (strict). Он влияет на строгую проверку типов, которая не позволяет выполнять операции между объектами, несовместимыми по типу. Это повышает качество кода и стабильность приложения, так как не позволяет разработчику неправильно обращаться к типам.
+Параметр target отвечает за результат компиляции TypeScript. Например, при установке значения es5 код будет преобразован в стандарт ECMAScript 2009, который поддерживается большинством браузеров.
+Свойства module и moduleResolution позволяют настроить способ компиляции модулей. С их помощью вы можете разделить код приложения на модули, а компилятор соберёт этот код в понятный браузеру JavaScript.
+В свойстве lib указываются наборы определений типов, которые будут включены в проект по умолчанию. Например, если ваше приложение будет работать в браузере и вам нужна поддержка DOM API, потребуется включить определения типов для DOM (dom). Так TypeScript сможет распознать используемые вами методы.
+Важное свойство для React — jsx. Оно определяет способ преобразования синтаксиса JSX в JavaScript. Значение react-jsx указывает, что весь JSX-код будет транспилирован, то есть преобразован в вызов функции _jsx из библиотеки react/jsx-runtime.
+Параметр allowJs позволяет импортировать обычные .js файлы в TypeScript-проекте. Это значит, что вы можете использовать JavaScript-файлы в вашем TypeScript-коде без предварительной компиляции.
+Параметр allowSyntheticDefaultImports упрощает синтаксис импорта модулей. Он позволяет использовать синтаксис импорта модулей, который предназначен для JavaScript с поддержкой "default" экспорта, даже если импортируемый модуль явно не экспортирует "default". Это удобно, потому что вы всегда можете использовать стандартный синтаксис импорта модулей.
+
+// allowSyntheticDefaultImports === true
+import React from "react";
+
+// allowSyntheticDefaultImports === false
+import * as React from "react";
+
+С полным списком настроек вы можете ознакомиться в документации к TypeScript. Вы можете возвращаться к ней, если у вас возникают какие-то вопросы.
+
+Проверяем запуск сборки
+Создадим в корне проекта папку src, а в ней файл index.ts cо следующим содержимым:
+
+const numbers:number[] = [2, 3, 5];
+
+// Стрелочная функция. Не запнётся ли на ней Internet Explorer?
+const doubledNumbers = numbers.map(number => number * 2);
+
+console.log(doubledNumbers); // 4, 6, 10
+
+Для проверки запустите сборку командой 
+
+npx webpack --config webpack.config.js --mode=production
+
+Создалась папка dist, а в ней файл main.js — это и есть ваш бандл.
+
+(()=>{"use strict";var n=[2,3,5].map((function(n){return 2*n}));console.log(n)})();
+// кроме изменения синтаксиса пропали пробелы, а имена переменных сократились до одной буквы
+
+Чтобы постоянно не прописывать путь до конфигурационного файла Webpack и все необходимые флаги в терминале, добавьте команды start и build в блоке scripts файла package.json:
+
+{
+    // другие блоки файла package.json
+
+    "scripts": {
+           "webpack serve --mode=development --open",
+           "build": "webpack --mode production"
+    }
+    
+    // другие блоки файла package.json
+}
+
+Проверьте работу сборки командой 
+
+npm run build. 
+
+В результате вы увидите успешный процесс сборки.
+
+$ npm run build
+
+> React-Webpack-Starter@1.0.0 build
+> webpack --mode production
+
+asset main.js 83 bytes [emitted] [minimized] (name: main)
+./src/index.ts 254 bytes [built] [code generated]
+webpack 5.89.0 compiled successfully in 1699 ms
+
+Теперь попробуйте запустить скрипт 
+
+npm start
+
+. Эта команда инициирует процесс сборки приложения, а также запустит локальный сервер, который будет доступен в браузере. По адресу [localhost:8080](http://localhost:8080) вы увидите:
+
+Cannot GET
+
+Скрипты для окружения настроены. Вы получили две отдельные сборки для разработки и для финальной версии продукта. 
+Вы узнали, как преобразовать TS «Вебпаком» и лоадером, и запустили сборку, но загрузка сайта обычно начинается с HTML. Разберёмся, как подружить его с «Вебпаком».
+
+Настраиваем обработку HTML
+Вам же знаком плагин для работы с html — html-webpack-plugin.
+Пора установить его и подключить к проекту:
+Создайте 
+папку public 
+в корне проекта и добавьте в неё файл index.html:
+
+ <!DOCTYPE html>
+ <html lang="en">
+ 
+ <head>
+     <meta charset="UTF-8">
+     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Document</title>
+ </head>
+ 
+ <body>
+     <div id="root"></div>
+ </body>
+ 
+ </html>
+ 
+ Установите плагин:
+
+ npm install -D html-webpack-plugin
+
+ Плагины решают много задач, но, в отличие от лоадеров, не транспилят код. Они производят разные операции над файлами, например копирование.
+Добавьте настройку для HtmlWebpackPlugin после блока resolve:
+
+ const HTMLWebpackPlugins = require('html-webpack-plugin');
+ ...
+ resolve: {
+     extensions: ['.js', '.jsx', '.tsx', '.ts', '.json'], // указываем файлы, с которыми будет работать webpack
+ },
+ plugins: [
+    new HTMLWebpackPlugins({
+       template: path.resolve(__dirname, 'public/index.html')
+    }),
+ ]
+ 
+ Проверьте сборку ещё раз. 
+В файл index.html автоматически подключился бандл. Это поведение можно отключить, изменив опции плагина, но сейчас в этом нет необходимости. Она возникнет, если понадобится явно контролировать порядок внедрения скриптов в HTML-файле. Установка опции inject: false позволяет вручную управлять порядком их подключения в тегах <head> или <body>.
+Отлично! Можно двигаться дальше.

@@ -1,0 +1,287 @@
+Сборка проекта на Webpack. Часть 3
+Пора переходить к финальной части сборки.
+Настройка обработки SCSS
+Установите пакеты, необходимые для работы со стилями приложения, и подключите возможность использования препроцессора Sass:
+
+npm install -D css-loader mini-css-extract-plugin postcss-loader autoprefixer cssnano style-loader sass sass-loader
+
+Разберём флаги команды:
+css-loader нужен, чтобы научить «Вебпак» работать с CSS.
+mini-css-extract-plugin берёт много css-файлов и объединяет их в один, то есть собирает бандл. Используется в prod-режиме.
+postcss-loader нужен, чтобы подключить PostCSS.
+autoprefixer научит PostCSS добавлять вендорные префиксы.
+cssnano делает минификацию/оптимизацию CSS-кода.
+style-loader автоматически обрабатывает импортированные CSS-файлы, объединяет их, а затем встраивает стили в тег <style> HTML-документа. Используется в dev-режиме, чтобы автоматически внедрять стили без полной перезагрузки страницы.
+sass-loader является надстройкой для Webpack и использует библиотеку sass для компиляции Sass-кода в CSS.
+sass является JavaScript-реализацией Sass, препроцессора для таблиц стилей.
+Подключение CSS-модулей на React
+CSS-модули — один из самых популярных способов стилизации React-компонентов. Использование CSS-модулей гарантирует отсутствие коллизий с другими стилями, так как на этапе компиляции к классам добавляются уникальные идентификаторы. Для CSS-модулей неважно, используете ли вы только CSS или более продвинутый препроцессор (например, SASS). Вы всё равно можете записать эти стили в файлы и положить их рядом с React-компонентами.
+Прежде чем использовать CSS-модули в React, нужно немного настроить приложение.
+Свойство use, помимо строки, может принимать объект. В нём можно передать, какой loader мы хотим использовать, а также опции для него.
+Добавьте в файл webpack.config.js новые загрузчики для работы с SCSS-файлами:
+
+const path = require('path');
+const HTMLWebpackPlugins = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
+module.exports = {
+        entry: path.resolve(__dirname, './src/index.ts'),
+        output: {
+                path: path.resolve(__dirname, './dist'),
+                filename: 'main.js',
+                clean: true,
+        },
+
+        module: {
+                rules: [
+                        //подключение других лоадеров
+                        {
+                                test: /\.(sa|sc|c)ss$/,
+                                use: [
+                                        MiniCssExtractPlugin.loader,
+                                        'style-loader',
+                                        {
+                                                loader: 'css-loader',
+                                                options: {
+                                                        modules: {
+                                                                mode: 'local',
+                                                                localIdentName: '[name]__[local]__[hash:base64:5]',
+                                                                auto: /\.module\.\w+$/i,
+                                                                namedExport: false,
+                                                        },
+                                                        importLoaders: 2, //Значение 2 говорит о том, что некоторые трансформации PostCSS нужно применить до css-loader.
+                                                },
+                                        },
+                                        'postcss-loader',
+                                        {
+                                                loader: 'sass-loader',
+                                                options: {
+                                                        sourceMap: true,
+                                                },
+                                        },
+                                ],
+                        },
+                ],
+        },
+        resolve: {
+                extensions: ['.js', '.jsx', '.tsx', '.ts', '.json'],
+        },
+
+        plugins: [
+                new HTMLWebpackPlugins({
+                        template: path.resolve(__dirname, 'public/index.html'),
+                }),
+                new MiniCssExtractPlugin({
+                        filename: 'static/styles/index.css',
+                }),
+        ],
+};
+
+Опция modules в настройках css-loader необходима для включения конфигурации css-модулей. Давайте посмотрим, как формируется класс.
+Имя генерируемого класса можно настроить в опции localIdentName.
+{
+   loader: "css-loader",
+   options: {
+      modules: {
+         mode: 'local',
+         auto: /\.module\.\w+$/i,
+         namedExport: false,
+         localIdentName: '[name]__[local]__[hash:base64:5]'
+      },
+      importLoaders: 1
+   }
+}
+
+В опции localIdentName можно использовать следующие строковые шаблоны:
+[name]: основное имя файла, без расширения. Например, если у вас есть файл styles.css, то [name] вернёт styles.
+[folder]: папка, в которой находится файл. Например, если ваш файл находится в src/components, то [folder] вернёт components.
+[path]: путь к файлу. Если файл styles.css расположен в src/components, то [path] вернёт src/components.
+[file]: имя файла и его путь. Если файл styles.css расположен в src/components, то [file] вернёт src/components/styles.css.
+[ext]: расширение файла с ведущей точкой. Если файл styles.css, то [ext] вернёт .css.
+[hash]: хеш строки, генерируемый на основе localIdentHashSalt, localIdentHashFunction, localIdentHashDigest, localIdentHashDigestLength, localIdentContext, resourcePath и exportName. Этот хеш обеспечивает уникальность идентификаторов классов. Например, [hash:base64:8] вернёт первые 8 символов хеша в формате base64.
+[<hashFunction>:hash:<hashDigest>:<hashDigestLength>]: хеш с определёнными настройками, указанными в hashFunction, hashDigest, hashDigestLength. Например, [hash:base64:5] вернёт хеш класса в формате base64, используя первые 5 символов хеша.
+[local]: оригинальное имя класса. В случае CSS-модулей это будет имя класса, указанное в исходном коде стилей.
+Если у вас есть файл src/components/Button.module.css с классом button, то соответствующее имя класса в результирующем CSS-коде может выглядеть как Button-module__button__abcde.
+После изменения настроек Webpack остальные стили сайта, которые были подключены не как модули, а просто импортировались, — «отвалятся». Исправим это.
+В настройках Webpack будем применять модули только к тем файлам, которые содержат .module в своём названии. Напишем настройку auto: /\.module\.\w+$/i. Она ждёт регулярную строку. Теперь мы можем использовать как обычный css, так и модули.
+Более подробную информацию про настройку css-модулей можно прочитать в документации.
+Настройка PostCSS
+В корне проекта создайте файл postcss.config.js:
+
+const autoprefixer = require('autoprefixer');
+const cssnano = require('cssnano');
+
+module.exports = {
+  plugins: [
+    autoprefixer,
+    cssnano({ preset: 'default' })
+  ]
+};
+
+Проверьте подключение файлов стилей в файл index.ts. Создайте в папке src файлы: index.scss и index.module.scss:
+
+//содержимое index.scss
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+//содержимое index.module.scss
+.button {
+    padding: 20px;
+    background-color: transparent;
+}
+::placeholder {
+  color: gray;
+}
+
+Подключите их в точку входа:
+
+
+import style from './index.module.scss';
+import './index.scss';
+
+console.log(style); //использование объекта style важно для попадания стилей в css-бандл
+
+При подключении файла модуля мы получили ошибку TypeScript: 
+Cannot find module './index.module.scss' or its corresponding type declarations.ts(2307).
+Для решения этой проблемы нужно создать в корне папки src файл custom.d.ts.
+В файле custom.d.ts добавьте объявления типов для модулей, которые TypeScript не распознает автоматически. В нашем случае это файлы css-модулей, добавьте следующий код в custom.d.ts:
+
+declare module '*.module.css' {
+    const classes: { [key: string]: string };
+    export default classes;
+}
+
+declare module '*.module.scss' {
+    const classes: { [key: string]: string };
+    export default classes;
+}
+
+declare module '*.module.sass' {
+    const classes: { [key: string]: string };
+    export default classes;
+}
+
+Также временно закомментируйте style-loader в Webpack-конфиге. Он не используется совместно с MiniCssExtractPlugin.loader, и эту проблему мы решим позже. Запустите сборку приложения npm run build. В папке dist появился файл стилей index.css со следующим содержимым:
+
+.index-module__button__hKxt0{background-color:transparent;padding:20px}::-moz-placeholder{color:gray}::placeholder{color:gray}
+body{font-family:Arial,Helvetica,sans-serif} 
+
+Вы увидите сгенерированные селектор нашего css-модуля и добавленные postcss-префиксы для псевдокласса ::placeholder.
+В следующих темах вы научитесь применять css-модули на практике.
+Настройка работы с изображениями и шрифтами
+Для работы с файлами шрифтов и изображениями понадобится Asset Modules — специальный тип модулей, которые позволяют добавлять в сборку ресурсы без помощи отдельных загрузчиков.
+Эта функциональность уже встроена в Webpack. Достаточно научить его видеть файлы шрифтов. 
+Файлы шрифтов и изображение:
+OpenSans-Bold.woff2
+OpenSans-Regular.woff2
+Изображение
+Для начала поместите файлы изображений в папку src/assets/images/, а шрифтов — в папку fonts.
+
+- src/
+--- assets/
+----- images/
+------- dog.jpg
+----- fonts/
+------- OpenSans-Bold.woff2
+------- OpenSans-Regular.woff2
+
+Теперь нужно расширить массив rules. Добавьте в него правило работы с файлами форматов woff и woff2 и популярными форматами изображений:
+
+{
+    test: /\.(png|jpg|gif|webp)$/,
+    type: 'asset/resource',
+        generator: {
+            filename: 'static/images/[hash][ext][query]',
+        },
+},
+{
+    test: /\.(woff(2)?|eot|ttf|otf)$/,
+    type: 'asset/resource',
+        generator: {
+            filename: 'static/fonts/[hash][ext][query]',
+        },
+},
+
+Теперь файлы шрифтов и изображений будут обрабатываться Webpack — остаётся только подключить их в проекте. В файле index.scss используйте директиву @font-face и подключите наш любимый шрифт OpenSans, а в файле index.ts подключите изображение:
+
+// index.scss
+@font-face {
+  font-family: 'OpenSans';
+  font-style: normal;
+  font-weight: 700;
+  src: url("./assets/fonts/OpenSans-Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: 'OpenSans';
+  font-style: normal;
+  font-weight: 400;
+  src: url("./assets/fonts/OpenSans-Regular.woff2") format("woff2");
+}
+
+html,
+body {
+  font-family: 'OpenSans', sans-serif;
+}
+
+// index.ts
+import './assets/images/dog.jpg';
+...
+
+Шрифт OpenSans и изображения появились в папке dist:
+
+Шрифт OpenSans и изображения появились в папке dist:
+
+Подробнее обо всех этих шагах можно прочитать по ссылке https://webpack.js.org/guides/asset-modules/.
+
+Для работы с svg установите url-loader и @svgr/webpack.
+
+npm install -D url-loader @svgr/webpack
+
+Подключите новое правило в блоке rules:
+
+{
+  test: /\.svg$/i,
+  issuer: /\.[jt]sx?$/,
+  use: ['@svgr/webpack', 'url-loader'],
+},
+
+Теперь вы можете подключать svg как React-компоненты:
+
+import { ReactComponent as ReactLogo } from './assets/images/react.svg';
+
+При таком подключении svg-изображения вы также будете получать ошибку typescript. Чтобы её исправить в файле custom.d.ts, добавьте объявления типов svg, jpg, png и json добавьте следующий код в custom.d.ts:
+
+declare module '*.svg' {
+  import React = require('react');
+
+  export const ReactComponent: React.FunctionComponent<
+  React.SVGProps<SVGSVGElement>
+  >;
+  const src: string;
+  export default src;
+}
+declare module '*.png' {
+  const content: any;
+  export default content;
+}
+declare module '*.jpg' {
+  const content: any;
+  export default content;
+}
+declare module '*.json' {
+  const content: any;
+  export default content;
+}
+
+Теперь вы можете подключать в ваше React-приложение изображения и шрифты.
+Файл .gitignore
+Наверняка мы захотим хранить наш код где-то в облачном хранилище типа GitHub, для этого неплохо было бы заранее к этому подготовиться. Дело в том, что когда мы инициируем git в своём репозитории, он покажет нам несколько тысяч неотслеживаемых изменений. Произойдёт это потому, что мы установили множество сторонних библиотек, которые попали в папку node_modules. Эта папка уже сейчас весит очень много, а в будущем она разрастётся ещё сильнее. Но у нас нет необходимости хранить эту папку вместе с нашим кодом, потому что любой разработчик при скачивании кода из репозитория может одной командой npm i скачать себе все зависимости. Поэтому мы можем создать файл .gitignore в корне проекта и написать туда все файлы и папки, которые мы не хотим, чтобы git отслеживал. Создайте такой файл и добавьте в папку node_modules:
+
+node_modules
+dist
+build
+
+Теперь git будет предварительно смотреть в этот файл и исключать написанные в нём файлы и папки из списка отслеживаемых.
+Основная сборка почти подходит к концу — осталось разобраться со средами prod и dev.

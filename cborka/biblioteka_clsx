@@ -1,0 +1,83 @@
+Установка библиотеки clsx
+
+Вы пока не изучали основы React и не создавали компоненты. Поэтому данной библиотекой вы пока не сможете воспользоваться. Но на будущее мы расскажем, как добавить её в сборку.
+
+Установим 
+
+npm install clsx.
+
+Импортируем в компонент `import clsx from 'clsx'`.
+clsx — это функция, в которую мы передаём наборы классов через запятую, либо объект с условием. 
+Давайте применим его к нашему классу header.
+
+import clsx from 'clsx';
+
+constHeader = ({children}) => {
+return(
+      <header className={clsx(s.header,'cover')}>
+       ...
+      </header>
+   );
+};
+
+Но удобство библиотеки clsx раскрывается, когда нам нужно добавить класс по условию.
+Давайте создадим компонент кнопки, добавим ей стилей и подключим в App.js.
+
+//App.js
+<Button type="primary">
+                    Купить
+</Button>
+
+//button/index.tsx
+import { ReactNode } from 'react';
+interface IButtonProps {
+    children: ReactNode;
+}
+export const Button: React.FC<IButtonProps> = ({ children }) => {
+    return <button>{children}</button>;
+};
+
+//button/button.modules.css
+
+.button {
+    padding: 10px 18px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+    border-radius: 55px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color .3s;
+}
+
+Давайте будем добавлять класс модификатор в зависимости от тех пропсов, что мы передаём.
+Подключим clsx и передадим в функцию clsx наш класс и объект с условием.
+
+//App.tsx
+<Button type="primary">
+    Купить
+</Button>
+<Button type="secondary">
+    Подробнее
+</Button>
+
+//Button.tsx
+const Button = ({type, children}) => {
+    return (
+        <button className={clsx(s.button, {
+            [s.primary]: type === 'primary',
+            [s.secondary]: type === 'secondary',
+        })}>
+            {children}
+        </button>
+    );
+};
+
+Данный способ задавать класс в зависимости от значения props смотрится намного лучше и лучше расширяем.
+Подробнее можно прочитать в документации.
+Ещё один пример применения библиотеки: 
+
+//card
+{tags && tags.map((tag, i) =>
+    <span className={clsx('tag',{[`tag_type_${tag}`]: true})} key={`${i}-${tag}`}>{tag}</span>
+)}
